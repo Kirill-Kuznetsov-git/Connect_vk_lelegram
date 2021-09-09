@@ -15,7 +15,7 @@ def catch_reply_message(message):
             "telegram_name_author": message.from_user.username,
             "telegram_id": message.message_id,
             "text_answer": message.text}
-    response = requests.patch(f'http://192.168.0.228:8000/api/message/{message_vk_id}', data=data).json()
+    response = requests.patch(f'http://localhost:8000/api/message/{message_vk_id}', data=data).json()
     if response['status'] == "Success":
         response_vk = requests.get(f"https://api.vk.com/method/messages.send?user_id={response['message']['vk_id_author']}&message={message.text}&v=5.37&access_token=90029351296abbb21ddb4ef51f62a9dbfd0276e46e94fab1341402dd9d00cb3d981d01f9d401df56aecb9")
 

@@ -27,7 +27,7 @@ def main():
 
             data = {'text_question': mess['text'], 'vk_id': mess['id'], 'vk_id_author': mess['from_id'],
                     'vk_name_author': fullname}
-            response = requests.post('http://192.168.0.228:8000/api/message/', json=data, data=data).json()
+            response = requests.post('http://localhost:8000/api/message/', json=data, data=data).json()
             if response:
                 text_message = f"Message Id={mess['id']}. {mess['text']}"
                 telegram_response = requests.get(f"https://api.telegram.org/bot1937675661:AAEwE1U0255l9MgPSMNfcIXdOeCjzaIEsVw/sendMessage?chat_id=-581581642&parse_mode=Markdown&text={text_message}")

@@ -1,0 +1,56 @@
+version: "3.9"
+   
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build:
+      context: ./
+      dockerfile: ./docker_files/web/Dockerfile
+    command: bash -c "python ./project/manage.py makemigrations &&
+                      python ./project/manage.py migrate &&
+                      python ./project/manage.py runserver 0.0.0.0:8000"
+    restart: always
+    environment:
+      - POSTGRES_DATABASE_NAME=${POSTGRES_DATABASE_NAME:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - DEBUG=${DEBUG:-True}
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    links:
+      - db:db
+
+  telegram_bot:
+    build:
+      context: ./
+      dockerfile: ./docker_files/telegram_bot/Dockerfile
+    restart: always
+    command: bash -c "python /code/telegram_bot.py"
+
+  vk_bot:
+    build:
+      context: ./
+      dockerfile: ./docker_files/vk_bot/Dockerfile
+    restart: always
+    command: bash -c "python /code/vk_bot.py"
+
+  adminer:
+    image: adminer
+    restart: on-failure
+    depends_on:
+      - db
+    ports:
+      - "8081:8080"
